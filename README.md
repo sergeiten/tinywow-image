@@ -1,25 +1,58 @@
-# Laravel + Vue Starter Kit
+# TinyWow Compress Image
 
 ## Introduction
 
-Our Vue starter kit provides a robust, modern starting point for building Laravel applications with a Vue frontend using [Inertia](https://inertiajs.com).
+This is a simple image compression application based on [Laravel](https://laravel.com/) framework. The application allows users to upload an image, preview original and compressed versions, and receive a compressed image.
 
-Inertia allows you to build modern, single-page Vue applications using classic server-side routing and controllers. This lets you enjoy the frontend power of Vue combined with the incredible backend productivity of Laravel and lightning-fast Vite compilation.
+## Getting started
 
-This Vue starter kit utilizes Vue 3 and the Composition API, TypeScript, Tailwind, and the [shadcn-vue](https://www.shadcn-vue.com) component library.
+#### Create .env file and set env variables
 
-## Official Documentation
+```
+cp .env.example .env
+```
 
-Documentation for all Laravel starter kits can be found on the [Laravel website](https://laravel.com/docs/starter-kits).
+#### Laravel setup and migrations
 
-## Contributing
+```
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan storage:link
+```
 
-Thank you for considering contributing to our starter kit! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Insert ASSET_URL to .env file
 
-## Code of Conduct
+```
+ASSET_URL=http://localhost:8000/storage
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Run application
 
-## License
+```
+npm install && npm run build
+composer run dev
+```
 
-The Laravel + Vue starter kit is open-sourced software licensed under the MIT license.
+The application should be available at `http://localhost:8000`
+
+## Architecture
+
+Every time a user opens the application, it generates a session ID that is stored until the user closes the browser tab. The session ID is used to create a directory for the current session, where compressed images are stored - this prevents image name collisions. Users can set the compression quality (default: 50%). For each quality level, the application creates a separate file:
+
+```
+IMAGE_UPLOAD_DIR/session_id/quality_filename.ext
+```
+
+If a user tries to compress the same image with the same quality, the application returns the previously compressed image.
+
+The application stores basic image compression information in the database, which can be used for analytics purposes.
+
+## Improvements
+
+- Allow users to upload multiple images at once
+- Allow users to resize image
+- Supports more image formats (GIF, WebP)
+- Add support cloud store services (AWS S3, Cloudflare)
+- Account creation to save image compression history
+- Remove uploaded images after 1 hour
